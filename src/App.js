@@ -1,8 +1,22 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import { connect } from 'react-redux';
-import { readData } from './Actions/readData';
-import { writeNewDocumentWithId, writeNewDocumentWithoutId, updateDocument, deleteDocument } from './Actions/writeData';
+import { Route, BrowserRouter as Router, Redirect,Switch } from 'react-router-dom';
+import { Login } from './Components/Authentication';
+import { Home } from './Components/Home';
+import { logout } from './Actions/auth/logout';
+
+const PrivateRoute = ({
+    component: Component, ...rest
+}) => (
+    <Route
+        {...rest}
+        render={props => (
+            sessionStorage.getItem('token')
+            ? <Component {...props} />
+            : <Redirect to={ {pathname: '/login', /*state: {from: props.location}*/ } } />
+        )}
+    />
+);
 
 class App extends Component {
 
@@ -21,30 +35,34 @@ class App extends Component {
 		return (
 			<div className="container main-App">
 				<div className="row">
-					<div className="column">
-						Welcome to the React, Redux and Firebase bootstrap application built by <br/>
-						<strong>Rishabh Anand</strong>
-					</div>
-					<div className='column'>
-						<img src={logo} alt="react logo" />
-					</div>
+                    <div className="column">
+
+                    </div>
+                    <div className="column">
+                        {this.props.credential ? <button className="button button-primary" onClick={() => {this.props.logout()}}>Sign Out</button> : null}
+                    </div>
+                </div>
+				<div className="row">
+					<Router>
+						<Switch>
+							<Route path="/login" component={Login} />
+							<PrivateRoute path='/' component={Home} />
+						</Switch>
+					</Router>
 				</div>
 			</div>
 		);
 	}
 }
 const mapStateToProps = (state) => {
+	const { credential } = state.auth;
 	return {
-		...state,
+		credential,
 	};
 };
 const mapDispatchToProps = (dispatch) => {
 	return {
-		readData: (collection,document) => {dispatch(readData(collection,document))},
-		writeNewDocumentWithId: (collection,docId,data) => {dispatch(writeNewDocumentWithId(collection,docId,data))},
-		updateDocument: (collection,docId,data) => {dispatch(updateDocument(collection,docId,data))},
-		writeNewDocumentWithoutId: (collection,data) => {dispatch(writeNewDocumentWithoutId(collection,data))},
-		deleteDocument: (collection,docId) => {dispatch(deleteDocument(collection,docId))},
+		logout: () => {dispatch(logout())},
 	};
 };
 const connectedApp = connect(mapStateToProps,mapDispatchToProps)(App);

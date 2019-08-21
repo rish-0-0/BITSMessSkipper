@@ -24,37 +24,20 @@ const receivedError = (err) => {
 export const readData = (collection,document) => {
     return dispatch => {
         dispatch(gettingData());
-        if(document) {
-            // IF A SPECIFIC DOCUMENT IS REQUESTED
-            let docRef = DB.collection(collection).doc(document);
-            docRef.get()
-            .then(doc => {
-                let documents = [];
-                documents.push(doc.data());
-                let parcel = {
-                    'items': documents,
-                };
-                dispatch(receivedData(parcel));
-            })
-            .catch(err => {
-                dispatch(receivedError(err.message));
-            });
-        } else {
-            // THE WHOLE COLLECTION IS REQUESTED
-            DB.collection(collection).get()
-            .then((querySnapshot) => {
-                let documents = [];
-                querySnapshot.forEach((doc) => {
-                    documents.push(doc.data());
-                });
-                let parcel = {
-                    'items': documents,
-                };
-                dispatch(receivedData(parcel));
-            })
-            .catch(err => {
-               dispatch(receivedError(err.message)); 
-            });
-        }
+        // IF A SPECIFIC DOCUMENT IS REQUESTED
+        let docRef = DB.ref('/'+collection+'/'+document).once('value');
+        docRef
+        .then(doc => {
+            let documents = [];
+            documents.push(doc.val());
+            let parcel = {
+                'items': documents,
+            };
+            dispatch(receivedData(parcel));
+        })
+        .catch(err => {
+            console.log(err.message);
+            dispatch(receivedError(err.message));
+        });
     };
 };

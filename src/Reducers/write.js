@@ -1,6 +1,6 @@
 let initialState = {
     stillWriting: false,
-    wroteDocumentId: null,
+    wrote:false,
     writeError: null,
 };
 export function write(state=initialState,action) {
@@ -13,13 +13,13 @@ export function write(state=initialState,action) {
         case 'WROTE_DATA':
             return {
                 ...state,
-                stillWriting: false,
-                wroteDocumentId: action.payload.docId
-            };
+                wrote:true,
+                stillWriting: false,            };
         case 'WRITE_ERROR':
             return {
                 ...state,
                 stillWriting: false,
+                wrote:false,
                 writeError: action.payload.err,
             };
         default:

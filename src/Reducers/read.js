@@ -1,6 +1,6 @@
 let initialState = {
     loading: false,
-    readItems: [],
+    readItems: null,
     readError: null,
 };
 export function read(state=initialState,action) {
@@ -11,11 +11,12 @@ export function read(state=initialState,action) {
                 loading: true,
             };
         case 'RECEIVED_DATA':
-            console.log('READ_REDUCER',action.payload);
+            // console.log('READ_REDUCER',action.payload);
+            const items = action.payload.items;
             return {
                 ...state,
                 loading: false,
-                readItems: action.payload,
+                readItems: items,
             };
         case 'RECEIVED_ERROR':
             return {
