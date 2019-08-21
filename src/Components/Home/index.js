@@ -134,9 +134,11 @@ class Home extends Component {
         return(
             <div className="container">
                 <div className="row">
-                    {this.props.readError ? <h4>{this.props.readError}</h4> : null}
-                    {this.props.readItems && this.props.readItems.length !== 0 ?
-                    this.props.readItems.map(item => {
+                    {(Array.isArray(this.props.readItems) && this.props.readItems.length) ?
+                    this.props.readItems.map((item,index) => {
+                        if(!item) {
+                            return <h1 key={index}>Hello, {this.props.name}</h1>;
+                        }
                         return(
                             <div className="container" key={item.Id}>
                                 <h1>{item.Name}</h1>
