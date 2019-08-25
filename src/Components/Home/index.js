@@ -13,10 +13,18 @@ class Home extends Component {
             valid:true,
         };
     }
-    componentDidMount() {
+    async componentDidMount() {
         let email = this.props.email;
-        email = email.split('.').join('_');
-        this.props.readData('Users',email);
+        const success = await this.getBitsId(email);
+        if(!success) {
+            this.setState({
+                error:"You have network problems, or you don't belong to the database",
+            });
+        }
+        else {
+            email = email.split('.').join('_');
+            this.props.readData('Users',email);
+        }
     }
     // handleName = (e) => {
     //     const name = e.target.value;
@@ -24,19 +32,57 @@ class Home extends Component {
     //         name:name,
     //     });
     // };
-    handleId = (e) => {
-        const BITSid = e.target.value;
-        this.setState({
-            BITSid:BITSid,
-        });
+    // handleId = (e) => {
+    //     const BITSid = e.target.value;
+    //     this.setState({
+    //         BITSid:BITSid,
+    //     });
+    // };
+    getBitsId = async (email) => {
+        // console.log('getting BITS ID');
+        try {
+            console.log('fetching');
+            const response = await fetch(`https://us-central1-bitsdelivery-6a7e4.cloudfunctions.net/getStudentDetails?flag=true&dest=${email}`,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept':'application/json',
+                    },
+                }
+            );
+            // console.log('HOW LONG WILL THIS WAIT');
+            console.log('DATA after fetching ID',response);
+            let flag;
+            if(response.status === 200) {
+                flag = true;
+            } else {
+                flag = false;
+            }
+            console.log("FLAG",flag);
+            return flag;
+        } catch (err) {
+            console.log('Error ocurred while getting id from email: ',email,err);
+        }
     };
     handleCheck = () => {
         this.setState({
             selectOption: !this.state.selectOption,
         });
     };
-    handleSubmit = (name,id,selected) => {
+    setBitsId = (id) => {
+        this.setState({
+            BITSid: id,
+        });
+    };
+    handleSubmit = async (name,id,selected) => {
         let email = this.props.email;
+        if(id === '') {
+            await this.setState({
+                error: 'NO RECORD FOUND. NOT A REGISTERED STUDENT IN BITS PILANI, GOA',
+            });
+            console.log("Error ocurred due to an ID Problem: The ID is: ",id);
+            return;
+        }
         // Retrieve count from previous time and handle count exceeding funda
         // basically return the function after a state change 
         // So no writing to the database is done
@@ -131,6 +177,10 @@ class Home extends Component {
         
     };
     render() {
+        let BITSID = '';
+        if(Array.isArray(this.props.readItems) && this.props.readItems.length) {
+            BITSID = this.props.readItems[0].Id;
+        }
         return(
             <div className="container">
                 <div className="row">
@@ -177,14 +227,9 @@ class Home extends Component {
                                 You can only avail this service two times every month
                             </li>
                             <li className="list-group-item">
-                                <span className="badge badge-secondary badge-pill">!</span>
-                                &nbsp;
-                                Please only write your own name and ID in the form, as it is recorded by the CSA
-                            </li>
-                            <li className="list-group-item">
                                 <span className="badge badge-danger badge-pill">!</span>
                                 &nbsp;
-                                You must not utilise the mess services for the next day during any meal, i.e, breakfast, lunch and dinner
+                                You must not utilise the mess services for the next day during any meal, i.e breakfast, lunch and dinner
                             </li>
                         </ul>
                     </div>
@@ -198,7 +243,7 @@ class Home extends Component {
                             </div> */}
                             <div className="form-group">
                                 <label htmlFor="idField">BITS ID</label>
-                                <input className="form-control" type="text" id="idField" value={this.state.BITSid} onChange={(e) => this.handleId(e)} />
+                                <input className="form-control" type="text" id="idField" value={BITSID} readOnly />
                             </div>
                             <div className="form-check">
                                 <input type="checkbox" className="form-check-input" id="confirmField" onChange={() => this.handleCheck()} />
@@ -206,7 +251,7 @@ class Home extends Component {
                             </div>
                             <button className="btn btn-success" onClick={(e) => {
                                 e.preventDefault();
-                                this.handleSubmit(this.props.name,this.state.BITSid,this.state.selectOption);
+                                this.handleSubmit(this.props.name,BITSID,this.state.selectOption);
                             }}>Submit</button>
                             {this.state.error ? <h5>{this.state.error}</h5> : null}
                         </fieldset>
