@@ -7,7 +7,6 @@ class Home extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            name: '',
             BITSid:'',
             selectOption: false,
             error:null,
@@ -19,12 +18,12 @@ class Home extends Component {
         email = email.split('.').join('_');
         this.props.readData('Users',email);
     }
-    handleName = (e) => {
-        const name = e.target.value;
-        this.setState({
-            name:name,
-        });
-    };
+    // handleName = (e) => {
+    //     const name = e.target.value;
+    //     this.setState({
+    //         name:name,
+    //     });
+    // };
     handleId = (e) => {
         const BITSid = e.target.value;
         this.setState({
@@ -141,10 +140,30 @@ class Home extends Component {
                             return <h1 key={index}>Hello, {this.props.name}</h1>;
                         }
                         return(
-                            <div className="container-fluid" key={item.Id}>
-                                <h3>{item.Name}</h3>
-                                <h3>{item.Email}</h3>
-                                <h3>{item.Id}</h3>
+                            // <div className="container-fluid" key={item.Id}>
+                            //     <h3>{item.Name}</h3>
+                            //     <h3>{item.Email}</h3>
+                            //     <h3>{item.Id}</h3>
+                            // </div>
+                            <div className="table-responsive" key={item.Id}>
+                                <table className="table">
+                                    <thead className="thead-dark">
+                                        <tr>
+                                            <th scope="col"></th>
+                                            <th scope="col">Name</th>
+                                            <th scope="col">Email</th>
+                                            <th scope="col">ID</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row"></th>
+                                            <td>{item.Name}</td>
+                                            <td>{item.Email}</td>
+                                            <td>{item.Id}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         )
                     }) : <h1>Welcome, First Time?<br /></h1>}
@@ -173,10 +192,10 @@ class Home extends Component {
                 <div className="row form-row">
                     <form>
                         <fieldset>
-                            <div className="form-group">
+                            {/* <div className="form-group">
                                 <label htmlFor="nameField">Name</label>
                                 <input className="form-control" type="text" id="nameField" value={this.state.name} onChange={(e) => this.handleName(e)} />
-                            </div>
+                            </div> */}
                             <div className="form-group">
                                 <label htmlFor="idField">BITS ID</label>
                                 <input className="form-control" type="text" id="idField" value={this.state.BITSid} onChange={(e) => this.handleId(e)} />
@@ -187,7 +206,7 @@ class Home extends Component {
                             </div>
                             <button className="btn btn-success" onClick={(e) => {
                                 e.preventDefault();
-                                this.handleSubmit(this.state.name,this.state.BITSid,this.state.selectOption);
+                                this.handleSubmit(this.props.name,this.state.BITSid,this.state.selectOption);
                             }}>Submit</button>
                             {this.state.error ? <h5>{this.state.error}</h5> : null}
                         </fieldset>

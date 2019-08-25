@@ -15,16 +15,16 @@ class Login extends Component {
                 {this.props.credential ? <Redirect to='/' /> : null}
                 <div className="row">
                     <div className="container-fluid text-center p-5 m-2">
-                        <div class="card text-center">
-                            <div class="card-header">
+                        <div className="card text-center">
+                            <div className="card-header">
                                 Portal for mess skip service
                             </div>
-                            <div class="card-body">
-                                <h5 class="card-title">Sign in with your BITS Mail</h5>
-                                <p class="card-text">You don't have to avail this if you have applied for leave.</p>
+                            <div className="card-body">
+                                <h5 className="card-title">Sign in with your BITS Mail</h5>
+                                <p className="card-text">You don't have to avail this if you have applied for leave.</p>
                                 <button className="btn btn-primary signin" onClick={() => this.props.login()}>Login via Google</button>
                             </div>
-                            <div class="card-footer text-muted">
+                            <div className="card-footer text-muted">
                                 Applicable only twice a month
                             </div>
                         </div>
