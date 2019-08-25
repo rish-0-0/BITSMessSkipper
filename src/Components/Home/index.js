@@ -41,7 +41,8 @@ class Home extends Component {
         // Retrieve count from previous time and handle count exceeding funda
         // basically return the function after a state change 
         // So no writing to the database is done
-        if(this.props.readItems && this.props.readItems.length !== 0) {
+        if(Array.isArray(this.props.readItems) && this.props.readItems.length && this.props.readItems[0]) {
+            // console.log(this.props.readItems);
             let { SkipMess } = this.props.readItems[0];
             let getMonths = [];
             Object.keys(SkipMess).forEach( key => {
@@ -140,29 +141,51 @@ class Home extends Component {
                             return <h1 key={index}>Hello, {this.props.name}</h1>;
                         }
                         return(
-                            <div className="container" key={item.Id}>
-                                <h1>{item.Name}</h1>
-                                <h2>{item.Email}</h2>
+                            <div className="container-fluid" key={item.Id}>
+                                <h3>{item.Name}</h3>
+                                <h3>{item.Email}</h3>
                                 <h3>{item.Id}</h3>
                             </div>
                         )
                     }) : <h1>Welcome, First Time?<br /></h1>}
                 </div>
                 <div className="row">
-                    
+                    <div className="container">
+                        <ul className="list-group list-group-flush">
+                            <li className="list-group-item">
+                                <span className="badge badge-warning badge-pill">!</span>
+                                &nbsp;
+                                You can only avail this service two times every month
+                            </li>
+                            <li className="list-group-item">
+                                <span className="badge badge-secondary badge-pill">!</span>
+                                &nbsp;
+                                Please only write your own name and ID in the form, as it is recorded by the CSA
+                            </li>
+                            <li className="list-group-item">
+                                <span className="badge badge-danger badge-pill">!</span>
+                                &nbsp;
+                                You must not utilise the mess services for the next day during any meal, i.e, breakfast, lunch and dinner
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-                <div className="row">
+                <div className="row form-row">
                     <form>
                         <fieldset>
-                            <label htmlFor="nameField">Name</label>
-                            <input type="text" id="nameField" value={this.state.name} onChange={(e) => this.handleName(e)} />
-                            <label htmlFor="idField">BITS ID</label>
-                            <input type="text" id="idField" value={this.state.BITSid} onChange={(e) => this.handleId(e)} />
-                            <div>
-                                <input type="checkbox" id="confirmField" onChange={() => this.handleCheck()} />
-                                <label className="label-inline" htmlFor="confirmField">I want to opt out of mess for tomorrow</label>
+                            <div className="form-group">
+                                <label htmlFor="nameField">Name</label>
+                                <input className="form-control" type="text" id="nameField" value={this.state.name} onChange={(e) => this.handleName(e)} />
                             </div>
-                            <button className="button button-primary" onClick={(e) => {
+                            <div className="form-group">
+                                <label htmlFor="idField">BITS ID</label>
+                                <input className="form-control" type="text" id="idField" value={this.state.BITSid} onChange={(e) => this.handleId(e)} />
+                            </div>
+                            <div className="form-check">
+                                <input type="checkbox" className="form-check-input" id="confirmField" onChange={() => this.handleCheck()} />
+                                <label className="form-check-label" htmlFor="confirmField">I want to opt out of mess for tomorrow</label>
+                            </div>
+                            <button className="btn btn-success" onClick={(e) => {
                                 e.preventDefault();
                                 this.handleSubmit(this.state.name,this.state.BITSid,this.state.selectOption);
                             }}>Submit</button>

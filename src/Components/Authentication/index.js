@@ -11,23 +11,25 @@ class Login extends Component {
     }
     render() {
         return(
-            <div className="container">
+            <div className="container-fluid">
                 {this.props.credential ? <Redirect to='/' /> : null}
                 <div className="row">
-                    Some theme shit
-                </div>
-                <div className="row">
-                    Some more theme shit
-                </div>
-                <div className="row">
-                    Login via your BITS Email
-                </div>
-                <div className="row">
-                    Some rules and regulations
-                </div>
-                <div className="row">
-                    <button className="button button-outline" onClick={() => this.props.login()}>Login via Google</button>
-                </div>
+                    <div className="container-fluid text-center p-5 m-2">
+                        <div class="card text-center">
+                            <div class="card-header">
+                                Portal for mess skip service
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">Sign in with your BITS Mail</h5>
+                                <p class="card-text">You don't have to avail this if you have applied for leave.</p>
+                                <button className="btn btn-primary signin" onClick={() => this.props.login()}>Login via Google</button>
+                            </div>
+                            <div class="card-footer text-muted">
+                                Applicable only twice a month
+                            </div>
+                        </div>
+                    </div>
+                </div>        
             </div>
         );
     }
