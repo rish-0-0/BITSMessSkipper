@@ -51,11 +51,11 @@ class App extends Component {
                     <div className="col">
 						<div className="container-fluid">
 							<div className="row">
-								<div className="col-6 logo-col">
+								<div className="col-lg-6 logo-col">
 									<a href="http://csatimes.co.in/" className="csa-link-home"><h1 className="display-3 logo-heading">CSA TIMES</h1></a>
 									<small className="text-muted">Council for Student Affairs</small>
 								</div>
-								<div className="col-6">
+								<div className="col-lg-6">
 									<div className="container-fluid">										
 										<div className="row icons-row">
 											<div className="col">

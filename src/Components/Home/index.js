@@ -9,6 +9,9 @@ class Home extends Component {
         this.state = {
             BITSid:'',
             selectOption: false,
+            num:0,
+            successfulSubmission:false,
+            status:null,
             error:null,
             valid:true,
         };
@@ -80,6 +83,13 @@ class Home extends Component {
     };
     handleSubmit = async (name,id,selected) => {
         let email = this.props.email;
+        if(!selected) {
+            await this.setState({
+                error:'Please select the option',
+            });
+            console.log("Not selected option");
+            return;
+        }
         if(id === '') {
             await this.setState({
                 error: 'NO RECORD FOUND. NOT A REGISTERED STUDENT IN BITS PILANI, GOA',
@@ -94,12 +104,20 @@ class Home extends Component {
             // console.log(this.props.readItems);
             let { SkipMess } = this.props.readItems[0];
             let getMonths = [];
+            let numberOfMonths;
+            console.log("SKPMESS",SkipMess);
+            let noSkipFlag = false;
+            if(typeof SkipMess === "undefined")
+                {
+                    SkipMess = {};
+                    noSkipFlag = true;
+                }
             Object.keys(SkipMess).forEach( key => {
                 getMonths.push(SkipMess[key]);
             });
-            let numberOfMonths = Object.keys(SkipMess).length;
-            let lastMonth = getMonths[numberOfMonths - 1];
-            let numberOfMonthsRequestedForSkip = Object.keys(lastMonth).length;
+            numberOfMonths = !noSkipFlag ? Object.keys(SkipMess).length : 0;
+            let lastMonth = !noSkipFlag ? getMonths[numberOfMonths - 1] : null;
+            let numberOfMonthsRequestedForSkip = !noSkipFlag ? Object.keys(lastMonth).length : 0;
             if(numberOfMonthsRequestedForSkip === 2) {
                 this.setState({
                     valid:false,
@@ -110,18 +128,24 @@ class Home extends Component {
                 let month = nowDate.getMonth()+1; //1-12
                 let year = nowDate.getFullYear(); //Year
                 let day = nowDate.getDate(); // 1-31
+                day = this.tomorrow(nowDate).day;
+                month = this.tomorrow(nowDate).month;
                 let combined_month_year = month + '_'+year;
                 if(numberOfMonthsRequestedForSkip === 1) {
                     lastMonth['second'] = {
                         'day':day,
                     };
                 } else if(numberOfMonthsRequestedForSkip === 0) {
-                    lastMonth = {
-                        [combined_month_year]: {
-                            'first': {
-                                'day':day,
-                            },
-                        },
+                    // lastMonth = {
+                    //     [combined_month_year]: {
+                    //         'first': {
+                    //             'day':day,
+                    //         },
+                    //     },
+                    // };
+                    lastMonth={};
+                    lastMonth['first'] = {
+                        'day':day,
                     };
                 }
                 const pkg = {
@@ -153,6 +177,8 @@ class Home extends Component {
             let month = nowDate.getMonth()+1; //1-12
             let year = nowDate.getFullYear(); //Year
             let day = nowDate.getDate(); // 1-31
+            day = this.tomorrow(nowDate).day;
+            month = this.tomorrow(nowDate).month;
             let combined_month_year = month + '_'+year;
             const pkg = {
                 [modifiedEmail]:{
@@ -179,6 +205,59 @@ class Home extends Component {
             }
         }
         
+    };
+    tomorrow = (nowDate) => {
+        let tomo = new Date();
+        tomo.setDate(nowDate.getDate()+1);
+
+        return {
+            day:tomo.getDate(),
+            month:tomo.getMonth()+1, //month in js is from 0-11
+        };
+    };
+    functionSubmit = async (email,selectOption) => {
+        // fetch(`https://us-central1-bitsdelivery-6a7e4.cloudfunctions.net/setTodayMessOption?dest=${email}`, {
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //         'Accept':'application/json',
+        //     },
+        // })
+        // .then(res => {
+        //     console.log(res);
+            
+        //     this.setState({
+        //         valid:true,
+        //         successfulSubmission:true,
+        //     });
+        // })
+        // .catch(err => {
+        //     console.log("Error ocurred while submitting",err.message);
+        //     this.setState({
+        //         error: 'Error ocurred while submission',
+        //     });
+        // });
+        if(!selectOption) {
+            this.setState({
+                error:'Please tick the checkbox to submit a request',
+            });
+            return;
+        }
+        try {
+            const response = await fetch(`https://us-central1-bitsdelivery-6a7e4.cloudfunctions.net/setTodayMessOption?dest=${email}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept':'application/json',
+                },
+            });
+            const text = await response.text();
+            const status = parseInt(text[text.length - 1]);
+            this.setState({
+                status:status,
+            });
+            
+        } catch(err) {
+            console.log("Error ocurred while submitting through function",err.message);
+        }
     };
     render() {
         let BITSID = '';
@@ -255,15 +334,17 @@ class Home extends Component {
                             </div>
                             <button className="btn btn-success" onClick={(e) => {
                                 e.preventDefault();
-                                this.handleSubmit(this.props.name,BITSID,this.state.selectOption);
+                                //this.handleSubmit(this.props.name,BITSID,this.state.selectOption);
+                                this.functionSubmit(this.props.email,this.state.selectOption);
                             }}>Submit</button>
                             {this.state.error ? <h5>{this.state.error}</h5> : null}
                         </fieldset>
                     </form>
                 </div>
                 <div className="row">
-                    {!this.state.valid ? <h1>You have already applied twice</h1> : null}
-                    {this.props.wrote ? <h1>Successfully launched request</h1> : null}
+                    {this.state.status ? this.state.status === 1 ? <h1>You have skipped mess for tomorrow</h1> : null : null}
+                    {this.state.status ? this.state.status === 2 ? <h1>You have used it twice this month</h1> : null : null}
+                    {this.state.status ? this.state.status === 3 ? <h1>You have already used it for tomorrow</h1> : null : null}
                 </div>
             </div>
         );
