@@ -50,6 +50,10 @@ class Home extends Component {
                     },
                 }
             );
+            // const data = await response.text();
+            // console.log("what: ",data);
+            // const data = await response.json();
+            // console.log("data",data);
             // console.log('HOW LONG WILL THIS WAIT');
             console.log('DATA after fetching ID',response);
             let flag;
@@ -61,7 +65,7 @@ class Home extends Component {
             console.log("FLAG",flag);
             return flag;
         } catch (err) {
-            console.log('Error ocurred while getting id from email: ',email,err);
+            console.log('Error ocurred while running firebase function from email: ',email,err);
         }
     };
     handleCheck = () => {
@@ -208,8 +212,8 @@ class Home extends Component {
                                     <tbody>
                                         <tr>
                                             <th scope="row"></th>
-                                            <td>{item.Name}</td>
-                                            <td>{item.Email}</td>
+                                            <td>{this.props.name}</td>
+                                            <td>{this.props.email}</td>
                                             <td>{item.Id}</td>
                                         </tr>
                                     </tbody>
